@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5a0b3675-ba65-4e88-90d5-d2d3d9f99cd7</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<!-- Web Framework -->
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
+	<PackageReference Include="SendGrid" Version="9.29.3" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+
+	<!-- Carter for Module Endpoints -->
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+	
+	<!-- Security -->
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
+	<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bib.Application\Bib.Application.csproj" />
+    <ProjectReference Include="..\Bib.Infrastructure\Bib.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
