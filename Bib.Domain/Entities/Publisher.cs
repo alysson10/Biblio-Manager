@@ -5,6 +5,7 @@ namespace Bib.Domain.Entities
     public sealed class Publisher
     {
         public int Id { get; internal set; }
+        public int UserId { get; internal set; }
         public string Name { get; internal set; } = string.Empty;
         public string? Description { get; internal set; }
         public string? PhoneNumber { get; internal set; }
@@ -19,22 +20,22 @@ namespace Bib.Domain.Entities
             
         }
 
-        public Publisher(string name, string? description, string? phoneNumber, string? email, 
+        public Publisher(int userId, string name, string? description, string? phoneNumber, string? email, 
                          string? site, bool status, DateTime? updatedAt = null)
         {
+            Id = userId;
             Name = name;
             Description = description;
             PhoneNumber = phoneNumber;
             Email = email;
             Site = site;
             Status = status;
-            CreatedAt = DateTime.Now;
             UpdatedAt = updatedAt is null ? null : updatedAt;
         }
 
         public void UpdatePublisher(string name, string? description, string? phoneNumber, string? email,
                                     string? site, bool status)
-        {
+        {            
             Name = name;
             Description = description is null ? null : description;
             PhoneNumber = phoneNumber is null ? null : phoneNumber;

@@ -11,8 +11,11 @@ namespace Bib.Infrastructure.Data.UnitOfWork
         private readonly IDbConnectionFactory _connectionFactory;
         private IDbConnection? _connection;
         private IDbTransaction? _transaction;
+
         private IPublisherRepository? _publisherRepository;
+        private IAuthorRepository? _authorRepository;
         private IBookRepository _bookRepository;
+        private IUserRepository _userRepository;
 
         public DapperUnitOfWork(IDbConnectionFactory connectionFactory)
         {
@@ -22,8 +25,14 @@ namespace Bib.Infrastructure.Data.UnitOfWork
         public IPublisherRepository PublisherRepository =>
             _publisherRepository ??= new PublisherRepository(GetConnection(), _transaction);
 
+        public IAuthorRepository AuthorRepository =>
+            _authorRepository ??= new AuthorRepository(GetConnection(), _transaction);
+
         public IBookRepository BookRepository =>
             _bookRepository ??= new BookRepository(GetConnection(), _transaction);
+
+        public IUserRepository UserRepository =>
+            _userRepository ??= new UserRepository(GetConnection(), _transaction);
 
         public async Task BeginTransactionAsync()
         {

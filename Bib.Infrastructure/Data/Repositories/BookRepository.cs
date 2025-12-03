@@ -17,9 +17,14 @@ namespace Bib.Infrastructure.Data.Repositories
         {
         }
 
-        public Task<int> CreateAsync(Book publisher)
+        public async Task<int> CreateAsync(Book publisher)
         {
-            throw new NotImplementedException();
+            var sql = @"
+                INSERT INTO Books (UserId, PublisherId, AuthorId, Title, ISBN, PublishedDate, Price, CreatedAt)
+                OUTPUT INSERTED.Id
+                VALUES (@UserId, @PublisherId, @AuthorId, @Title, @ISBN, @PublishedDate, @Price, @CreatedAt)";
+
+            return await ExecuteScalarAsync<int>(sql, publisher);
         }
 
         public Task<bool> DeleteHardAsync(int id)
@@ -37,9 +42,13 @@ namespace Bib.Infrastructure.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Book>> GetAllAsync()
+        public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var sql = $@"
+                {BaseSelect}
+                ORDER BY Name";
+
+            return await QueryAsync<Book>(sql);
         }
 
         public async Task<Book> GetByIdAsync(int id)

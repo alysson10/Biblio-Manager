@@ -29,7 +29,7 @@ namespace Bib.Infrastructure.Data.Repositories
         {
             var sql = @"
                 SELECT Id, Name, Description, PhoneNumber, Email, Site, Status, CreatedAt, UpdatedAt, DeleteddAt 
-                FROM Publishers 
+                FROM Publisher
                 ORDER BY Name";
 
             return await QueryAsync<Publisher>(sql);
@@ -38,9 +38,9 @@ namespace Bib.Infrastructure.Data.Repositories
         public async Task<int> CreateAsync(Publisher publisher)
         {
             var sql = @"
-                INSERT INTO Publishers (Name, Description, PhoneNumber, Email, Site, Status, CreatedAt)
+                INSERT INTO Publisher (UserId, Name, Description, PhoneNumber, Email, Site, Status, CreatedAt)
                 OUTPUT INSERTED.Id
-                VALUES (@Name, @Description, @PhoneNumber, @Email, @Site, @Status, GETUTCDATE())";
+                VALUES (@UserId, @Name, @Description, @PhoneNumber, @Email, @Site, @Status, @CreatedAt)";
 
             return await ExecuteScalarAsync<int>(sql, publisher);
         }
@@ -48,7 +48,7 @@ namespace Bib.Infrastructure.Data.Repositories
         public async Task<bool> UpdateAsync(Publisher publisher)
         {
             var sql = @"
-                UPDATE Publishers 
+                UPDATE Publisher
                 SET Name = @Name, 
                     Description = @Description,
                     PhoneNumber = @PhoneNumber,
@@ -65,7 +65,7 @@ namespace Bib.Infrastructure.Data.Repositories
 
         public async Task<bool> DeleteHardAsync(int id)
         {
-            var sql = "DELETE FROM Publishers WHERE Id = @Id";
+            var sql = "DELETE FROM Publisher WHERE Id = @Id";
             var affectedRows = await ExecuteAsync(sql, new { Id = id });
             return affectedRows > 0;
         }
@@ -73,7 +73,7 @@ namespace Bib.Infrastructure.Data.Repositories
         public async Task<bool> DeleteSoftAsync(int id)
         {
             var sql = @"
-                UPDATE Publishers 
+                UPDATE Publisher
                 SET Status = 0, 
                     UpdatedAt = GETUTCDATE()
                     DeletedAt = GETUTCDATE()
@@ -85,7 +85,7 @@ namespace Bib.Infrastructure.Data.Repositories
 
         public async Task<bool> ExistsAsync(int id)
         {
-            var sql = "SELECT 1 FROM Publishers WHERE Id = @Id";
+            var sql = "SELECT 1 FROM Publisher WHERE Id = @Id";
             var result = await QueryFirstOrDefaultAsync<int?>(sql, new { Id = id });
             return result.HasValue;
         }
@@ -99,12 +99,6 @@ namespace Bib.Infrastructure.Data.Repositories
             var result = await QueryFirstOrDefaultAsync<int?>(sql, new { Id = id, Table = table, Column = column });
             return result.HasValue;
         }
-
-        //public async Task<Publisher> GetFirstByConditionAsync(string whereCondition, object parameters = null)
-        //{
-        //    var sql = $"{BaseSelect} WHERE {whereCondition}";
-        //    return await QueryFirstOrDefaultAsync<Publisher>(sql, parameters);
-        //}
 
         public async Task<bool> GetFirstByConditionAsync(string condition)
         {

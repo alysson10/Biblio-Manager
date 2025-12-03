@@ -9,26 +9,26 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bib.Application.Features.Publisher.Command.UpdatePublisher
+namespace Bib.Application.Features.Author.Command.UpdateAuthor
 {
-    public class UpdatePublisherCommandHandler : IRequestHandler<UpdatePublisherCommand, Result<int>>
+    public class UpdateAuthorCommandHandler : IRequestHandler<UpdateAuthorCommand, Result<int>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public UpdatePublisherCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
+        public UpdateAuthorCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IHttpContextAccessor contextAccessor)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
             _contextAccessor = contextAccessor;
+            _mapper = mapper;
         }
 
-        public async Task<Result<int>> Handle(UpdatePublisherCommand command, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(UpdateAuthorCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                var validator = new UpdatePublisherCommandValidator();
+                var validator = new UpdateAuthorCommandValidator();
                 var valid = validator.Validate(command);
                 if (!valid.IsValid)
                 {
@@ -37,19 +37,19 @@ namespace Bib.Application.Features.Publisher.Command.UpdatePublisher
                                   valid.Errors.FirstOrDefault().ErrorMessage));
                 }
 
-                var publishersEntity = await _unitOfWork.PublisherRepository.GetByIdAsync(command.Id);
-                if (publishersEntity is null)
+                var authorEntity = await _unitOfWork.AuthorRepository.GetByIdAsync(command.Id);
+                if (authorEntity is null)
                     return Result<int>.Failure(Error.NotFound);
 
                 var userId = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "nameid")?.Value!;
-                var newPublishersEntity = new Domain.Entities.Publisher(int.Parse(userId), command.Name, command.Description, command.PhoneNumber, command.Email, command.Site, command.Status);
-                
-                if (!ComparisonHelper.Changed(publishersEntity, newPublishersEntity))
+                var newPublishersEntity = new Domain.Entities.Author(int.Parse(userId), command.Name, command.Email, command.PhoneNumber, command.Status, DateTime.Now);
+
+                if (!ComparisonHelper.Changed(authorEntity, newPublishersEntity))
                     return Result<int>.Failure(Error.NotChange);
 
-                publishersEntity.UpdatePublisher(command.Name, command.Description, command.PhoneNumber, command.Email, command.Site, command.Status);
+                authorEntity.UpdatePublisher(command.Name, command.Email, command.PhoneNumber, command.Status);
 
-                var publisherId = await _unitOfWork.PublisherRepository.UpdateAsync(publishersEntity);
+                var publisherId = await _unitOfWork.AuthorRepository.UpdateAsync(authorEntity);
                 await _unitOfWork.CommitAsync();
 
                 return Result<int>.Success(command.Id);

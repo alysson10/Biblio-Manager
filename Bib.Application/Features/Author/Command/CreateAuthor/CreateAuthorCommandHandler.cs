@@ -7,24 +7,24 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bib.Application.Features.Publisher.Command.CreatePublisher
+namespace Bib.Application.Features.Author.Command.CreateAuthor
 {
-    public class CreatePublisherCommandHandler : IRequestHandler<CreatePublisherCommand, Result<int>>
+    public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, Result<int>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public CreatePublisherCommandHandler(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
+        public CreateAuthorCommandHandler(IUnitOfWork unitOfWork, IHttpContextAccessor contextAccessor)
         {
             _unitOfWork = unitOfWork;
             _contextAccessor = contextAccessor;
         }
 
-        public async Task<Result<int>> Handle(CreatePublisherCommand command, CancellationToken cancellationToken)
+        public async Task<Result<int>> Handle(CreateAuthorCommand command, CancellationToken cancellationToken)
         {
             try
             {
-                var validator = new CreatePublisherCommandValidator();
+                var validator = new CreateAuthorCommandValidator();
                 var valid = validator.Validate(command);
                 if (!valid.IsValid)
                 {
@@ -34,12 +34,12 @@ namespace Bib.Application.Features.Publisher.Command.CreatePublisher
                 }
 
                 var userId = _contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "nameid")?.Value!;
-                var publisher = new Domain.Entities.Publisher(int.Parse(userId), command.Name, command.Description, command.PhoneNumber, command.Email, command.Site, true);
+                var author = new Domain.Entities.Author(int.Parse(userId), command.Name, command.Email, command.PhoneNumber, true);
 
-                var publisherId = await _unitOfWork.PublisherRepository.CreateAsync(publisher);
+                var authorId = await _unitOfWork.AuthorRepository.CreateAsync(author);
                 await _unitOfWork.CommitAsync();
 
-                return Result<int>.Success(publisherId);
+                return Result<int>.Success(authorId);
             }
             catch (Exception)
             {
